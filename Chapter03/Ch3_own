@@ -1,0 +1,1393 @@
+{
+ "cells": [
+  {
+   "cell_type": "code",
+   "execution_count": 1,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "/Users/markus/Projects/Mastering Pandas for Finance_Code\n"
+     ]
+    }
+   ],
+   "source": [
+    "import datetime\n",
+    "import os\n",
+    "\n",
+    "import matplotlib.pyplot as plt\n",
+    "import numpy as np\n",
+    "import pandas as pd\n",
+    "\n",
+    "%matplotlib inline\n",
+    "\n",
+    "pd.set_option('display.notebook_repr_html', False)\n",
+    "pd.set_option('display.max_columns', 15)\n",
+    "pd.set_option('display.max_rows', 8)\n",
+    "pd.set_option('precision', 3)\n",
+    "\n",
+    "path = os.getcwd()\n",
+    "print(path)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 2,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stderr",
+     "output_type": "stream",
+     "text": [
+      "/Library/Frameworks/Python.framework/Versions/3.5/lib/python3.5/site-packages/pandas/io/data.py:35: FutureWarning: \nThe pandas.io.data module is moved to a separate package (pandas-datareader) and will be removed from pandas in a future version.\nAfter installing the pandas-datareader package (https://github.com/pydata/pandas-datareader), you can change the import ``from pandas.io import data, wb`` to ``from pandas_datareader import data, wb``.\n  FutureWarning)\n"
+     ]
+    }
+   ],
+   "source": [
+    "import pandas.io.data as web\n",
+    "\n",
+    "start = datetime.datetime(2012, 1, 1)\n",
+    "end = datetime.datetime(2012, 12, 30)\n",
+    "\n",
+    "# msft = web.DataReader('MSFT', 'yahoo', start, end)\n",
+    "# aapl = web.DataReader('AAPL', 'yahoo', start, end)\n",
+    "\n",
+    "msft = pd.read_csv(path+'/Chapter03/msft.csv', index_col=0, parse_dates=True)\n",
+    "aapl = pd.read_csv(path+'/Chapter03/aapl.csv', index_col=0, parse_dates=True)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 3,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "             Open   High    Low  Close    Volume  Adj Close\nDate                                                       \n2012-01-03  26.55  26.96  26.39  26.77  64731500     24.422\n2012-01-04  26.82  27.47  26.78  27.40  80516100     24.997\n2012-01-05  27.38  27.73  27.29  27.68  56081400     25.252"
+      ]
+     },
+     "execution_count": 3,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "msft[:3]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 4,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "              Open    High     Low   Close    Volume  Adj Close\nDate                                                           \n2012-01-03  409.40  412.50  409.00  411.23  75555200     55.414\n2012-01-04  410.00  414.68  409.28  413.44  65005500     55.711\n2012-01-05  414.95  418.55  412.67  418.03  67817400     56.330"
+      ]
+     },
+     "execution_count": 4,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "aapl[:3]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 5,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "            Adj Close\nDate                 \n2012-01-03     24.422\n2012-01-04     24.997\n2012-01-05     25.252"
+      ]
+     },
+     "execution_count": 5,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "msftA01 = msft['2012-01'][['Adj Close']]\n",
+    "msftA02 = msft['2012-02'][['Adj Close']]\n",
+    "msftA01[:3]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 6,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "            Adj Close\nDate                 \n2012-02-01     27.268\n2012-02-02     27.323\n2012-02-03     27.587"
+      ]
+     },
+     "execution_count": 6,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "msftA02[:3]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 7,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "            Adj Close\nDate                 \n2012-01-03     24.422\n2012-01-04     24.997\n2012-01-05     25.252\n2012-02-01     27.268\n2012-02-02     27.323\n2012-02-03     27.587"
+      ]
+     },
+     "execution_count": 7,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "pd.concat([msftA01.head(3), msftA02.head(3)])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 8,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "            Adj Close\nDate                 \n2012-01-03     24.422\n2012-01-04     24.997\n2012-01-05     25.252\n2012-01-03     55.414\n2012-01-04     55.711\n2012-01-05     56.330"
+      ]
+     },
+     "execution_count": 8,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "aaplA01 = aapl['2012-01'][['Adj Close']]\n",
+    "withDups = pd.concat([msftA01[:3], aaplA01[:3]])\n",
+    "withDups"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 9,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "            Adj Close\nDate                 \n2012-01-03     24.422\n2012-01-03     55.414"
+      ]
+     },
+     "execution_count": 9,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "withDups.ix['2012-01-03']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 10,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "                 Adj Close\n     Date                 \nMSFT 2012-01-03     24.422\n     2012-01-04     24.997\n     2012-01-05     25.252\nAAPL 2012-01-03     55.414\n     2012-01-04     55.711\n     2012-01-05     56.330"
+      ]
+     },
+     "execution_count": 10,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "closes = pd.concat([msftA01[:3],aaplA01[:3]], keys=['MSFT','AAPL'])\n",
+    "closes"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 11,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "            Adj Close\nDate                 \n2012-01-03     24.422\n2012-01-04     24.997\n2012-01-05     25.252"
+      ]
+     },
+     "execution_count": 11,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "closes.ix['MSFT'][:3]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 12,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "            Adj Close     Volume\nDate                            \n2012-01-03     24.422   64731500\n2012-01-04     24.997   80516100\n2012-01-05     25.252   56081400\n2012-01-06     25.644   99455500\n...               ...        ...\n2012-12-24     70.716   43938300\n2012-12-26     69.741   75609100\n2012-12-27     70.021  113780100\n2012-12-28     69.278   88569600\n\n[498 rows x 2 columns]"
+      ]
+     },
+     "execution_count": 12,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "msftAV = msft[['Adj Close', 'Volume']]\n",
+    "aaplAV = aapl[['Adj Close', 'Volume']]\n",
+    "pd.concat([msftAV, aaplAV])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 13,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "            Adj Close     Volume       0\nDate                                    \n2012-01-03     24.422  6.473e+07     NaN\n2012-01-04     24.997  8.052e+07     NaN\n2012-01-05     25.252  5.608e+07     NaN\n2012-01-06     25.644  9.946e+07     NaN\n...               ...        ...     ...\n2012-12-24        NaN        NaN  70.716\n2012-12-26        NaN        NaN  69.741\n2012-12-27        NaN        NaN  70.021\n2012-12-28        NaN        NaN  69.278\n\n[498 rows x 3 columns]"
+      ]
+     },
+     "execution_count": 13,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "aaplA = aapl['Adj Close']\n",
+    "pd.concat([msftAV, aaplA])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 14,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "              Open    High     Low   Close     Volume  Adj Close\nDate                                                            \n2012-01-03  409.40  412.50  409.00  411.23   75555200     55.414\n2012-01-04  410.00  414.68  409.28  413.44   65005500     55.711\n2012-01-05  414.95  418.55  412.67  418.03   67817400     56.330\n2012-01-06  419.77  422.75  419.22  422.40   79573200     56.919\n...            ...     ...     ...     ...        ...        ...\n2012-12-24  520.35  524.25  518.71  520.17   43938300     70.716\n2012-12-26  519.00  519.46  511.12  513.00   75609100     69.741\n2012-12-27  513.54  516.25  504.66  515.06  113780100     70.021\n2012-12-28  510.29  514.48  508.12  509.59   88569600     69.278\n\n[249 rows x 6 columns]"
+      ]
+     },
+     "execution_count": 14,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "aapl"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 15,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Empty DataFrame\nColumns: []\nIndex: [2012-01-03 00:00:00, 2012-01-04 00:00:00, 2012-01-05 00:00:00, 2012-01-06 00:00:00, 2012-01-09 00:00:00, 2012-01-10 00:00:00, 2012-01-11 00:00:00, 2012-01-12 00:00:00, 2012-01-13 00:00:00, 2012-01-17 00:00:00, 2012-01-18 00:00:00, 2012-01-19 00:00:00, 2012-01-20 00:00:00, 2012-01-23 00:00:00, 2012-01-24 00:00:00, 2012-01-25 00:00:00, 2012-01-26 00:00:00, 2012-01-27 00:00:00, 2012-01-30 00:00:00, 2012-01-31 00:00:00, 2012-02-01 00:00:00, 2012-02-02 00:00:00, 2012-02-03 00:00:00, 2012-02-06 00:00:00, 2012-02-07 00:00:00, 2012-02-08 00:00:00, 2012-02-09 00:00:00, 2012-02-10 00:00:00, 2012-02-13 00:00:00, 2012-02-14 00:00:00, 2012-02-15 00:00:00, 2012-02-16 00:00:00, 2012-02-17 00:00:00, 2012-02-21 00:00:00, 2012-02-22 00:00:00, 2012-02-23 00:00:00, 2012-02-24 00:00:00, 2012-02-27 00:00:00, 2012-02-28 00:00:00, 2012-02-29 00:00:00, 2012-03-01 00:00:00, 2012-03-02 00:00:00, 2012-03-05 00:00:00, 2012-03-06 00:00:00, 2012-03-07 00:00:00, 2012-03-08 00:00:00, 2012-03-09 00:00:00, 2012-03-12 00:00:00, 2012-03-13 00:00:00, 2012-03-14 00:00:00, 2012-03-15 00:00:00, 2012-03-16 00:00:00, 2012-03-19 00:00:00, 2012-03-20 00:00:00, 2012-03-21 00:00:00, 2012-03-22 00:00:00, 2012-03-23 00:00:00, 2012-03-26 00:00:00, 2012-03-27 00:00:00, 2012-03-28 00:00:00, 2012-03-29 00:00:00, 2012-03-30 00:00:00, 2012-04-02 00:00:00, 2012-04-03 00:00:00, 2012-04-04 00:00:00, 2012-04-05 00:00:00, 2012-04-09 00:00:00, 2012-04-10 00:00:00, 2012-04-11 00:00:00, 2012-04-12 00:00:00, 2012-04-13 00:00:00, 2012-04-16 00:00:00, 2012-04-17 00:00:00, 2012-04-18 00:00:00, 2012-04-19 00:00:00, 2012-04-20 00:00:00, 2012-04-23 00:00:00, 2012-04-24 00:00:00, 2012-04-25 00:00:00, 2012-04-26 00:00:00, 2012-04-27 00:00:00, 2012-04-30 00:00:00, 2012-05-01 00:00:00, 2012-05-02 00:00:00, 2012-05-03 00:00:00, 2012-05-04 00:00:00, 2012-05-07 00:00:00, 2012-05-08 00:00:00, 2012-05-09 00:00:00, 2012-05-10 00:00:00, 2012-05-11 00:00:00, 2012-05-14 00:00:00, 2012-05-15 00:00:00, 2012-05-16 00:00:00, 2012-05-17 00:00:00, 2012-05-18 00:00:00, 2012-05-21 00:00:00, 2012-05-22 00:00:00, 2012-05-23 00:00:00, 2012-05-24 00:00:00, ...]\n\n[498 rows x 0 columns]"
+      ]
+     },
+     "execution_count": 15,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "pd.concat([msftAV, aaplA], join='inner')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 17,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "            Adj Close  Adj Close\nDate                            \n2012-01-03     24.422     55.414\n2012-01-04     24.997     55.711\n2012-01-05     25.252     56.330"
+      ]
+     },
+     "execution_count": 17,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "msftA = msft[['Adj Close']]\n",
+    "closes = pd.concat([msftA, aaplA], axis=1)\n",
+    "closes[:3]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 26,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "            Adj Close\nDate                 \n2012-01-03     24.422\n2012-01-04     24.997\n2012-01-05     25.252\n2012-01-06     25.644\n...               ...\n2012-01-26     59.914\n2012-01-27     60.271\n2012-01-30     61.044\n2012-01-31     61.511\n\n[40 rows x 1 columns]"
+      ]
+     },
+     "execution_count": 26,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "pd.concat([msftA01, aaplA01])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 27,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Date\n2012-01-03    24.422\n2012-01-04    24.997\n2012-01-05    25.252\n2012-01-06    25.644\n               ...  \n2012-12-24    70.716\n2012-12-26    69.741\n2012-12-27    70.021\n2012-12-28    69.278\nName: Adj Close, dtype: float64"
+      ]
+     },
+     "execution_count": 27,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "msftA = msft['Adj Close']\n",
+    "aaplA = aapl['Adj Close']\n",
+    "pd.concat([msftA, aaplA])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 32,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "            Adj Close  Adj Close\nDate                            \n2012-01-03     24.422     55.414\n2012-01-04     24.997     55.711\n2012-01-05     25.252     56.330"
+      ]
+     },
+     "execution_count": 32,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "closes = pd.concat([msftA, aaplA], axis=1)\n",
+    "closes[:3]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 36,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "                MSFT                AAPL           \n           Adj Close    Volume Adj Close     Volume\nDate                                               \n2012-01-03    24.422  64731500    55.414  7.556e+07\n2012-01-04    24.997  80516100    55.711  6.501e+07\n2012-01-05    25.252  56081400    56.330  6.782e+07\n2012-01-06    25.644  99455500       NaN        NaN\n2012-01-09    25.307  59706800       NaN        NaN"
+      ]
+     },
+     "execution_count": 36,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "pd.concat([msftAV[:5], aaplAV[:3]], axis=1, keys=['MSFT', 'AAPL'])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 40,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "              MSFT    AAPL\nDate                      \n2012-01-03  24.422  55.414\n2012-01-04  24.997  55.711\n2012-01-05  25.252  56.330"
+      ]
+     },
+     "execution_count": 40,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "pd.concat([msftA[:5], aaplA[:3]], axis=1, join='inner', keys=['MSFT', 'AAPL'])"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 41,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "0    24.422\n1    24.997\n2    25.252\n3    55.414\n4    55.711\n5    56.330\nName: Adj Close, dtype: float64"
+      ]
+     },
+     "execution_count": 41,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "pd.concat([msftA[:3], aaplA[:3]], ignore_index=True)"
+   ]
+  },
+  {
+   "cell_type": "heading",
+   "metadata": {},
+   "level": 1,
+   "source": [
+    "Merging DataFrame objects"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 42,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "        Date  Adj Close\n0 2012-01-03     24.422\n1 2012-01-04     24.997\n2 2012-01-05     25.252"
+      ]
+     },
+     "execution_count": 42,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "msftAR = msftA.reset_index()\n",
+    "msftVR = msft[['Volume']].reset_index()\n",
+    "msftAR[:3]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 43,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "        Date    Volume\n0 2012-01-03  64731500\n1 2012-01-04  80516100\n2 2012-01-05  56081400"
+      ]
+     },
+     "execution_count": 43,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "msftVR[:3]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 45,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "          Date  Adj Close    Volume\n0   2012-01-03     24.422  64731500\n1   2012-01-04     24.997  80516100\n2   2012-01-05     25.252  56081400\n3   2012-01-06     25.644  99455500\n..         ...        ...       ...\n245 2012-12-24     25.385  20842400\n246 2012-12-26     25.197  31631100\n247 2012-12-27     25.291  39394000\n248 2012-12-28     24.906  28239900\n\n[249 rows x 3 columns]"
+      ]
+     },
+     "execution_count": 45,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "msftCVR = pd.merge(msftAR, msftVR)\n",
+    "msftCVR"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 46,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "        Date  Adj Close\n0 2012-01-03     24.422\n1 2012-01-04     24.997\n2 2012-01-05     25.252\n3 2012-01-06     25.644\n4 2012-01-09     25.307"
+      ]
+     },
+     "execution_count": 46,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "msftAR0_5 = msftAR[0:5]\n",
+    "msftAR0_5"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 47,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "        Date    Volume\n2 2012-01-05  56081400\n3 2012-01-06  99455500"
+      ]
+     },
+     "execution_count": 47,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "msftVR2_4 = msftVR[2:4]\n",
+    "msftVR2_4"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 48,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "        Date  Adj Close    Volume\n0 2012-01-05     25.252  56081400\n1 2012-01-06     25.644  99455500"
+      ]
+     },
+     "execution_count": 48,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "pd.merge(msftAR0_5, msftVR2_4)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 50,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "        Date  Adj Close     Volume\n0 2012-01-03     24.422        NaN\n1 2012-01-04     24.997        NaN\n2 2012-01-05     25.252  5.608e+07\n3 2012-01-06     25.644  9.946e+07\n4 2012-01-09     25.307        NaN"
+      ]
+     },
+     "execution_count": 50,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "pd.merge(msftAR0_5, msftVR2_4, how='outer')"
+   ]
+  },
+  {
+   "cell_type": "heading",
+   "metadata": {},
+   "level": 1,
+   "source": [
+    "Pivoting"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 52,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "        Date Symbol    Open    High     Low   Close    Volume  Adj Close\n0 2012-01-03   MSFT   26.55   26.96   26.39   26.77  64731500     24.422\n1 2012-01-03   AAPL  409.40  412.50  409.00  411.23  75555200     55.414\n2 2012-01-04   MSFT   26.82   27.47   26.78   27.40  80516100     24.997\n3 2012-01-04   AAPL  410.00  414.68  409.28  413.44  65005500     55.711"
+      ]
+     },
+     "execution_count": 52,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "msft.insert(0, 'Symbol', 'MSFT')\n",
+    "aapl.insert(0, 'Symbol', 'AAPL')\n",
+    "combined = pd.concat([msft, aapl]).sort_index()\n",
+    "s4p = combined.reset_index()\n",
+    "s4p[:4]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 53,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "           Symbol   Open   High    Low  Close    Volume  Adj Close\nDate                                                              \n2012-01-03   MSFT  26.55  26.96  26.39  26.77  64731500     24.422\n2012-01-04   MSFT  26.82  27.47  26.78  27.40  80516100     24.997\n2012-01-05   MSFT  27.38  27.73  27.29  27.68  56081400     25.252\n2012-01-06   MSFT  27.53  28.19  27.53  28.11  99455500     25.644\n2012-01-09   MSFT  28.05  28.10  27.72  27.74  59706800     25.307"
+      ]
+     },
+     "execution_count": 53,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "msft[:5]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 57,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Symbol        AAPL    MSFT\nDate                      \n2012-01-03  55.414  24.422\n2012-01-04  55.711  24.997\n2012-01-05  56.330  25.252"
+      ]
+     },
+     "execution_count": 57,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "closes = s4p.pivot(index='Date', columns='Symbol', values='Adj Close')\n",
+    "closes[:3]"
+   ]
+  },
+  {
+   "cell_type": "heading",
+   "metadata": {},
+   "level": 1,
+   "source": [
+    "Stacking and unstacking"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 59,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Date        Symbol\n2012-01-03  AAPL      55.414\n            MSFT      24.422\n2012-01-04  AAPL      55.711\n            MSFT      24.997\n                       ...  \n2012-12-27  AAPL      70.021\n            MSFT      25.291\n2012-12-28  AAPL      69.278\n            MSFT      24.906\ndtype: float64"
+      ]
+     },
+     "execution_count": 59,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "stackedCloses = closes.stack()\n",
+    "stackedCloses"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 60,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "55.413620000000002"
+      ]
+     },
+     "execution_count": 60,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "stackedCloses['2012-01-03']['AAPL']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 69,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "55.413620000000002"
+      ]
+     },
+     "execution_count": 69,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "stackedCloses.ix['2012-01-03', 'AAPL']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 70,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Date\n2012-01-03    24.422\n2012-01-04    24.997\n2012-01-05    25.252\n2012-01-06    25.644\n               ...  \n2012-12-24    25.385\n2012-12-26    25.197\n2012-12-27    25.291\n2012-12-28    24.906\ndtype: float64"
+      ]
+     },
+     "execution_count": 70,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "stackedCloses.ix[:, 'MSFT']"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 71,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Symbol        AAPL    MSFT\nDate                      \n2012-01-03  55.414  24.422\n2012-01-04  55.711  24.997\n2012-01-05  56.330  25.252"
+      ]
+     },
+     "execution_count": 71,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "unstackedCloses = stackedCloses.unstack()\n",
+    "unstackedCloses[:3]"
+   ]
+  },
+  {
+   "cell_type": "heading",
+   "metadata": {},
+   "level": 1,
+   "source": [
+    "Melting"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 72,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "          Date Symbol    Open    High     Low   Close     Volume  Adj Close\n0   2012-01-03   MSFT   26.55   26.96   26.39   26.77   64731500     24.422\n1   2012-01-03   AAPL  409.40  412.50  409.00  411.23   75555200     55.414\n2   2012-01-04   MSFT   26.82   27.47   26.78   27.40   80516100     24.997\n3   2012-01-04   AAPL  410.00  414.68  409.28  413.44   65005500     55.711\n..         ...    ...     ...     ...     ...     ...        ...        ...\n494 2012-12-27   AAPL  513.54  516.25  504.66  515.06  113780100     70.021\n495 2012-12-27   MSFT   26.89   27.09   26.57   26.96   39394000     25.291\n496 2012-12-28   MSFT   26.71   26.90   26.55   26.55   28239900     24.906\n497 2012-12-28   AAPL  510.29  514.48  508.12  509.59   88569600     69.278\n\n[498 rows x 8 columns]"
+      ]
+     },
+     "execution_count": 72,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "s4p"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 73,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "        Date Symbol variable   value\n0 2012-01-03   MSFT     Open   26.55\n1 2012-01-03   AAPL     Open  409.40\n2 2012-01-04   MSFT     Open   26.82\n3 2012-01-04   AAPL     Open  410.00\n4 2012-01-05   MSFT     Open   27.38"
+      ]
+     },
+     "execution_count": 73,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "melted = pd.melt(s4p, id_vars=['Date', 'Symbol'])\n",
+    "melted[:5]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 74,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "           Date Symbol   variable    value\n0    2012-01-03   MSFT       Open   26.550\n1    2012-01-03   AAPL       Open  409.400\n2    2012-01-04   MSFT       Open   26.820\n3    2012-01-04   AAPL       Open  410.000\n...         ...    ...        ...      ...\n2984 2012-12-27   AAPL  Adj Close   70.021\n2985 2012-12-27   MSFT  Adj Close   25.291\n2986 2012-12-28   MSFT  Adj Close   24.906\n2987 2012-12-28   AAPL  Adj Close   69.278\n\n[2988 rows x 4 columns]"
+      ]
+     },
+     "execution_count": 74,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "melted"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 78,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "           Date Symbol   variable      value\n0    2012-01-03   MSFT       Open  2.655e+01\n1    2012-01-03   AAPL       Open  4.094e+02\n498  2012-01-03   MSFT       High  2.696e+01\n499  2012-01-03   AAPL       High  4.125e+02\n...         ...    ...        ...        ...\n1992 2012-01-03   MSFT     Volume  6.473e+07\n1993 2012-01-03   AAPL     Volume  7.556e+07\n2490 2012-01-03   MSFT  Adj Close  2.442e+01\n2491 2012-01-03   AAPL  Adj Close  5.541e+01\n\n[12 rows x 4 columns]"
+      ]
+     },
+     "execution_count": 78,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "melted[(melted.Date=='2012-01-03')]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 80,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "           Date Symbol   variable      value\n0    2012-01-03   MSFT       Open  2.655e+01\n498  2012-01-03   MSFT       High  2.696e+01\n996  2012-01-03   MSFT        Low  2.639e+01\n1494 2012-01-03   MSFT      Close  2.677e+01\n1992 2012-01-03   MSFT     Volume  6.473e+07\n2490 2012-01-03   MSFT  Adj Close  2.442e+01"
+      ]
+     },
+     "execution_count": 80,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "melted[(melted.Date=='2012-01-03') & (melted.Symbol=='MSFT')]"
+   ]
+  },
+  {
+   "cell_type": "heading",
+   "metadata": {},
+   "level": 1,
+   "source": [
+    "GROUPING AND AGGREGATING"
+   ]
+  },
+  {
+   "cell_type": "heading",
+   "metadata": {},
+   "level": 1,
+   "source": [
+    "Splitting"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 87,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "        Date  Year  Month Symbol  Adj Close\n0 2012-01-03  2012      1   MSFT     24.422\n1 2012-01-03  2012      1   AAPL     55.414\n2 2012-01-04  2012      1   MSFT     24.997\n3 2012-01-04  2012      1   AAPL     55.711\n4 2012-01-05  2012      1   MSFT     25.252"
+      ]
+     },
+     "execution_count": 87,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "s4g = combined[['Symbol', 'Adj Close']].reset_index()\n",
+    "s4g.insert(1, 'Year', pd.DatetimeIndex(s4g['Date']).year)\n",
+    "s4g.insert(2, 'Month', pd.DatetimeIndex(s4g['Date']).month)\n",
+    "s4g[:5]"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 88,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "<pandas.core.groupby.DataFrameGroupBy object at 0x1096232b0>"
+      ]
+     },
+     "execution_count": 88,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "s4g.groupby('Symbol')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 89,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "dict"
+      ]
+     },
+     "execution_count": 89,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "grouped = s4g.groupby('Symbol')\n",
+    "type(grouped.groups)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 90,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "{'AAPL': [1,\n  3,\n  5,\n  7,\n  9,\n  11,\n  13,\n  14,\n  16,\n  18,\n  20,\n  23,\n  25,\n  27,\n  29,\n  30,\n  33,\n  34,\n  37,\n  38,\n  41,\n  43,\n  45,\n  46,\n  48,\n  50,\n  53,\n  54,\n  56,\n  58,\n  61,\n  63,\n  64,\n  67,\n  69,\n  71,\n  72,\n  75,\n  77,\n  79,\n  81,\n  82,\n  84,\n  86,\n  89,\n  91,\n  92,\n  94,\n  97,\n  99,\n  100,\n  102,\n  104,\n  107,\n  109,\n  111,\n  112,\n  114,\n  116,\n  118,\n  120,\n  123,\n  125,\n  126,\n  128,\n  130,\n  132,\n  134,\n  137,\n  138,\n  140,\n  143,\n  145,\n  146,\n  148,\n  150,\n  153,\n  155,\n  156,\n  159,\n  161,\n  162,\n  165,\n  166,\n  169,\n  171,\n  173,\n  175,\n  176,\n  179,\n  181,\n  183,\n  184,\n  186,\n  189,\n  190,\n  193,\n  195,\n  197,\n  199,\n  200,\n  203,\n  205,\n  207,\n  209,\n  211,\n  212,\n  214,\n  216,\n  219,\n  221,\n  223,\n  224,\n  227,\n  228,\n  230,\n  232,\n  234,\n  237,\n  238,\n  240,\n  242,\n  244,\n  247,\n  248,\n  250,\n  252,\n  254,\n  257,\n  259,\n  261,\n  263,\n  265,\n  267,\n  269,\n  271,\n  273,\n  275,\n  277,\n  278,\n  280,\n  282,\n  285,\n  287,\n  289,\n  290,\n  293,\n  295,\n  296,\n  298,\n  301,\n  302,\n  305,\n  307,\n  308,\n  310,\n  312,\n  314,\n  316,\n  318,\n  321,\n  322,\n  324,\n  327,\n  328,\n  331,\n  333,\n  335,\n  337,\n  338,\n  340,\n  343,\n  344,\n  347,\n  348,\n  350,\n  353,\n  354,\n  357,\n  359,\n  361,\n  363,\n  364,\n  367,\n  368,\n  370,\n  372,\n  375,\n  377,\n  379,\n  380,\n  382,\n  385,\n  386,\n  389,\n  391,\n  393,\n  395,\n  396,\n  398,\n  401,\n  402,\n  405,\n  407,\n  409,\n  410,\n  412,\n  414,\n  417,\n  419,\n  420,\n  423,\n  425,\n  427,\n  428,\n  431,\n  432,\n  434,\n  436,\n  439,\n  441,\n  443,\n  444,\n  447,\n  448,\n  451,\n  452,\n  455,\n  456,\n  458,\n  460,\n  463,\n  464,\n  466,\n  468,\n  471,\n  472,\n  474,\n  476,\n  478,\n  480,\n  482,\n  484,\n  487,\n  488,\n  490,\n  492,\n  494,\n  497],\n 'MSFT': [0,\n  2,\n  4,\n  6,\n  8,\n  10,\n  12,\n  15,\n  17,\n  19,\n  21,\n  22,\n  24,\n  26,\n  28,\n  31,\n  32,\n  35,\n  36,\n  39,\n  40,\n  42,\n  44,\n  47,\n  49,\n  51,\n  52,\n  55,\n  57,\n  59,\n  60,\n  62,\n  65,\n  66,\n  68,\n  70,\n  73,\n  74,\n  76,\n  78,\n  80,\n  83,\n  85,\n  87,\n  88,\n  90,\n  93,\n  95,\n  96,\n  98,\n  101,\n  103,\n  105,\n  106,\n  108,\n  110,\n  113,\n  115,\n  117,\n  119,\n  121,\n  122,\n  124,\n  127,\n  129,\n  131,\n  133,\n  135,\n  136,\n  139,\n  141,\n  142,\n  144,\n  147,\n  149,\n  151,\n  152,\n  154,\n  157,\n  158,\n  160,\n  163,\n  164,\n  167,\n  168,\n  170,\n  172,\n  174,\n  177,\n  178,\n  180,\n  182,\n  185,\n  187,\n  188,\n  191,\n  192,\n  194,\n  196,\n  198,\n  201,\n  202,\n  204,\n  206,\n  208,\n  210,\n  213,\n  215,\n  217,\n  218,\n  220,\n  222,\n  225,\n  226,\n  229,\n  231,\n  233,\n  235,\n  236,\n  239,\n  241,\n  243,\n  245,\n  246,\n  249,\n  251,\n  253,\n  255,\n  256,\n  258,\n  260,\n  262,\n  264,\n  266,\n  268,\n  270,\n  272,\n  274,\n  276,\n  279,\n  281,\n  283,\n  284,\n  286,\n  288,\n  291,\n  292,\n  294,\n  297,\n  299,\n  300,\n  303,\n  304,\n  306,\n  309,\n  311,\n  313,\n  315,\n  317,\n  319,\n  320,\n  323,\n  325,\n  326,\n  329,\n  330,\n  332,\n  334,\n  336,\n  339,\n  341,\n  342,\n  345,\n  346,\n  349,\n  351,\n  352,\n  355,\n  356,\n  358,\n  360,\n  362,\n  365,\n  366,\n  369,\n  371,\n  373,\n  374,\n  376,\n  378,\n  381,\n  383,\n  384,\n  387,\n  388,\n  390,\n  392,\n  394,\n  397,\n  399,\n  400,\n  403,\n  404,\n  406,\n  408,\n  411,\n  413,\n  415,\n  416,\n  418,\n  421,\n  422,\n  424,\n  426,\n  429,\n  430,\n  433,\n  435,\n  437,\n  438,\n  440,\n  442,\n  445,\n  446,\n  449,\n  450,\n  453,\n  454,\n  457,\n  459,\n  461,\n  462,\n  465,\n  467,\n  469,\n  470,\n  473,\n  475,\n  477,\n  479,\n  481,\n  483,\n  485,\n  486,\n  489,\n  491,\n  493,\n  495,\n  496]}"
+      ]
+     },
+     "execution_count": 90,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "grouped.groups"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 91,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "(2, 2)"
+      ]
+     },
+     "execution_count": 91,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "len(grouped), grouped.ngroups"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 92,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    "def print_groups(groupobject):\n",
+    "    for name, group in groupobject:\n",
+    "        print(name)\n",
+    "        print(group.head())"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 93,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "AAPL\n        Date  Year  Month Symbol  Adj Close\n1 2012-01-03  2012      1   AAPL     55.414\n3 2012-01-04  2012      1   AAPL     55.711\n5 2012-01-05  2012      1   AAPL     56.330\n7 2012-01-06  2012      1   AAPL     56.919\n9 2012-01-09  2012      1   AAPL     56.829\nMSFT\n        Date  Year  Month Symbol  Adj Close\n0 2012-01-03  2012      1   MSFT     24.422\n2 2012-01-04  2012      1   MSFT     24.997\n4 2012-01-05  2012      1   MSFT     25.252\n6 2012-01-06  2012      1   MSFT     25.644\n8 2012-01-09  2012      1   MSFT     25.307\n"
+     ]
+    }
+   ],
+   "source": [
+    "print_groups(grouped)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 94,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "Symbol\nAAPL    249\nMSFT    249\ndtype: int64"
+      ]
+     },
+     "execution_count": 94,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "grouped.size()"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 96,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "          Date  Year  Month Symbol  Adj Close\n0   2012-01-03  2012      1   MSFT     24.422\n2   2012-01-04  2012      1   MSFT     24.997\n4   2012-01-05  2012      1   MSFT     25.252\n6   2012-01-06  2012      1   MSFT     25.644\n..         ...   ...    ...    ...        ...\n491 2012-12-24  2012     12   MSFT     25.385\n493 2012-12-26  2012     12   MSFT     25.197\n495 2012-12-27  2012     12   MSFT     25.291\n496 2012-12-28  2012     12   MSFT     24.906\n\n[249 rows x 5 columns]"
+      ]
+     },
+     "execution_count": 96,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "grouped.get_group('MSFT')"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 97,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "('AAPL', 2012, 1)\n        Date  Year  Month Symbol  Adj Close\n1 2012-01-03  2012      1   AAPL     55.414\n3 2012-01-04  2012      1   AAPL     55.711\n5 2012-01-05  2012      1   AAPL     56.330\n7 2012-01-06  2012      1   AAPL     56.919\n9 2012-01-09  2012      1   AAPL     56.829\n('AAPL', 2012, 2)\n         Date  Year  Month Symbol  Adj Close\n41 2012-02-01  2012      2   AAPL     61.472\n43 2012-02-02  2012      2   AAPL     61.328\n45 2012-02-03  2012      2   AAPL     61.942\n46 2012-02-06  2012      2   AAPL     62.520\n48 2012-02-07  2012      2   AAPL     63.175\n('AAPL', 2012, 3)\n         Date  Year  Month Symbol  Adj Close\n81 2012-03-01  2012      3   AAPL     73.368\n82 2012-03-02  2012      3   AAPL     73.464\n84 2012-03-05  2012      3   AAPL     71.844\n86 2012-03-06  2012      3   AAPL     71.453\n89 2012-03-07  2012      3   AAPL     71.511\n('AAPL', 2012, 4)\n          Date  Year  Month Symbol  Adj Close\n125 2012-04-02  2012      4   AAPL     83.361\n126 2012-04-03  2012      4   AAPL     84.801\n128 2012-04-04  2012      4   AAPL     84.126\n130 2012-04-05  2012      4   AAPL     85.389\n132 2012-04-09  2012      4   AAPL     85.733\n('AAPL', 2012, 5)\n          Date  Year  Month Symbol  Adj Close\n165 2012-05-01  2012      5   AAPL     78.443\n166 2012-05-02  2012      5   AAPL     78.961\n169 2012-05-03  2012      5   AAPL     78.401\n171 2012-05-04  2012      5   AAPL     76.168\n173 2012-05-07  2012      5   AAPL     76.738\n('AAPL', 2012, 6)\n          Date  Year  Month Symbol  Adj Close\n209 2012-06-01  2012      6   AAPL     75.594\n211 2012-06-04  2012      6   AAPL     76.039\n212 2012-06-05  2012      6   AAPL     75.842\n214 2012-06-06  2012      6   AAPL     77.005\n216 2012-06-07  2012      6   AAPL     77.040\n('AAPL', 2012, 7)\n          Date  Year  Month Symbol  Adj Close\n250 2012-07-02  2012      7   AAPL     79.843\n252 2012-07-03  2012      7   AAPL     80.771\n254 2012-07-05  2012      7   AAPL     82.190\n257 2012-07-06  2012      7   AAPL     81.643\n259 2012-07-09  2012      7   AAPL     82.722\n('AAPL', 2012, 8)\n          Date  Year  Month Symbol  Adj Close\n293 2012-08-01  2012      8   AAPL     81.768\n295 2012-08-02  2012      8   AAPL     81.900\n296 2012-08-03  2012      8   AAPL     82.966\n298 2012-08-06  2012      8   AAPL     83.889\n301 2012-08-07  2012      8   AAPL     83.668\n('AAPL', 2012, 9)\n          Date  Year  Month Symbol  Adj Close\n338 2012-09-04  2012      9   AAPL     91.343\n340 2012-09-05  2012      9   AAPL     90.702\n343 2012-09-06  2012      9   AAPL     91.519\n344 2012-09-07  2012      9   AAPL     92.084\n347 2012-09-10  2012      9   AAPL     89.688\n('AAPL', 2012, 10)\n          Date  Year  Month Symbol  Adj Close\n377 2012-10-01  2012     10   AAPL     89.235\n379 2012-10-02  2012     10   AAPL     89.495\n380 2012-10-03  2012     10   AAPL     90.867\n382 2012-10-04  2012     10   AAPL     90.238\n385 2012-10-05  2012     10   AAPL     88.315\n('AAPL', 2012, 11)\n          Date  Year  Month Symbol  Adj Close\n419 2012-11-01  2012     11   AAPL     80.729\n420 2012-11-02  2012     11   AAPL     78.058\n423 2012-11-05  2012     11   AAPL     79.116\n425 2012-11-06  2012     11   AAPL     78.877\n427 2012-11-07  2012     11   AAPL     75.859\n('AAPL', 2012, 12)\n          Date  Year  Month Symbol  Adj Close\n460 2012-12-03  2012     12   AAPL     79.691\n463 2012-12-04  2012     12   AAPL     78.285\n464 2012-12-05  2012     12   AAPL     73.247\n466 2012-12-06  2012     12   AAPL     74.396\n468 2012-12-07  2012     12   AAPL     72.494\n('MSFT', 2012, 1)\n        Date  Year  Month Symbol  Adj Close\n0 2012-01-03  2012      1   MSFT     24.422\n2 2012-01-04  2012      1   MSFT     24.997\n4 2012-01-05  2012      1   MSFT     25.252\n6 2012-01-06  2012      1   MSFT     25.644\n8 2012-01-09  2012      1   MSFT     25.307\n('MSFT', 2012, 2)\n         Date  Year  Month Symbol  Adj Close\n40 2012-02-01  2012      2   MSFT     27.268\n42 2012-02-02  2012      2   MSFT     27.323\n44 2012-02-03  2012      2   MSFT     27.587\n47 2012-02-06  2012      2   MSFT     27.551\n49 2012-02-07  2012      2   MSFT     27.688\n('MSFT', 2012, 3)\n         Date  Year  Month Symbol  Adj Close\n80 2012-03-01  2012      3   MSFT     29.652\n83 2012-03-02  2012      3   MSFT     29.459\n85 2012-03-05  2012      3   MSFT     29.202\n87 2012-03-06  2012      3   MSFT     28.981\n88 2012-03-07  2012      3   MSFT     29.238\n('MSFT', 2012, 4)\n          Date  Year  Month Symbol  Adj Close\n124 2012-04-02  2012      4   MSFT     29.652\n127 2012-04-03  2012      4   MSFT     29.330\n129 2012-04-04  2012      4   MSFT     28.660\n131 2012-04-05  2012      4   MSFT     28.944\n133 2012-04-09  2012      4   MSFT     28.559\n('MSFT', 2012, 5)\n          Date  Year  Month Symbol  Adj Close\n164 2012-05-01  2012      5   MSFT     29.394\n167 2012-05-02  2012      5   MSFT     29.202\n168 2012-05-03  2012      5   MSFT     29.165\n170 2012-05-04  2012      5   MSFT     28.449\n172 2012-05-07  2012      5   MSFT     28.146\n('MSFT', 2012, 6)\n          Date  Year  Month Symbol  Adj Close\n208 2012-06-01  2012      6   MSFT     26.297\n210 2012-06-04  2012      6   MSFT     26.389\n213 2012-06-05  2012      6   MSFT     26.352\n215 2012-06-06  2012      6   MSFT     27.129\n217 2012-06-07  2012      6   MSFT     27.018\n('MSFT', 2012, 7)\n          Date  Year  Month Symbol  Adj Close\n251 2012-07-02  2012      7   MSFT     28.247\n253 2012-07-03  2012      7   MSFT     28.432\n255 2012-07-05  2012      7   MSFT     28.376\n256 2012-07-06  2012      7   MSFT     27.905\n258 2012-07-09  2012      7   MSFT     27.729\n('MSFT', 2012, 8)\n          Date  Year  Month Symbol  Adj Close\n292 2012-08-01  2012      8   MSFT     27.184\n294 2012-08-02  2012      8   MSFT     26.981\n297 2012-08-03  2012      8   MSFT     27.498\n299 2012-08-06  2012      8   MSFT     27.683\n300 2012-08-07  2012      8   MSFT     27.970\n('MSFT', 2012, 9)\n          Date  Year  Month Symbol  Adj Close\n339 2012-09-04  2012      9   MSFT     28.276\n341 2012-09-05  2012      9   MSFT     28.276\n342 2012-09-06  2012      9   MSFT     29.169\n345 2012-09-07  2012      9   MSFT     28.797\n346 2012-09-10  2012      9   MSFT     28.583\n('MSFT', 2012, 10)\n          Date  Year  Month Symbol  Adj Close\n376 2012-10-01  2012     10   MSFT     27.439\n378 2012-10-02  2012     10   MSFT     27.597\n381 2012-10-03  2012     10   MSFT     27.783\n383 2012-10-04  2012     10   MSFT     27.941\n384 2012-10-05  2012     10   MSFT     27.774\n('MSFT', 2012, 11)\n          Date  Year  Month Symbol  Adj Close\n418 2012-11-01  2012     11   MSFT     27.467\n421 2012-11-02  2012     11   MSFT     27.448\n422 2012-11-05  2012     11   MSFT     27.569\n424 2012-11-06  2012     11   MSFT     27.783\n426 2012-11-07  2012     11   MSFT     27.057\n('MSFT', 2012, 12)\n          Date  Year  Month Symbol  Adj Close\n461 2012-12-03  2012     12   MSFT     24.794\n462 2012-12-04  2012     12   MSFT     24.737\n465 2012-12-05  2012     12   MSFT     25.019\n467 2012-12-06  2012     12   MSFT     25.075\n469 2012-12-07  2012     12   MSFT     24.822\n"
+     ]
+    }
+   ],
+   "source": [
+    "mcg = s4g.groupby(['Symbol', 'Year', 'Month'])\n",
+    "print_groups(mcg)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 98,
+   "metadata": {},
+   "outputs": [
+    {
+     "data": {
+      "text/plain": [
+       "                        Date  Adj Close\nSymbol Year Month                      \nMSFT   2012 1     2012-01-03     24.422\nAAPL   2012 1     2012-01-03     55.414\nMSFT   2012 1     2012-01-04     24.997\nAAPL   2012 1     2012-01-04     55.711\n...                      ...        ...\n            12    2012-12-27     70.021\nMSFT   2012 12    2012-12-27     25.291\n            12    2012-12-28     24.906\nAAPL   2012 12    2012-12-28     69.278\n\n[498 rows x 2 columns]"
+      ]
+     },
+     "execution_count": 98,
+     "metadata": {},
+     "output_type": "execute_result"
+    }
+   ],
+   "source": [
+    "mi = s4g.set_index(['Symbol', 'Year', 'Month'])\n",
+    "mi"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 100,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "AAPL\n                        Date  Adj Close\nSymbol Year Month                      \nAAPL   2012 1     2012-01-03     55.414\n            1     2012-01-04     55.711\n            1     2012-01-05     56.330\n            1     2012-01-06     56.919\n            1     2012-01-09     56.829\nMSFT\n                        Date  Adj Close\nSymbol Year Month                      \nMSFT   2012 1     2012-01-03     24.422\n            1     2012-01-04     24.997\n            1     2012-01-05     25.252\n            1     2012-01-06     25.644\n            1     2012-01-09     25.307\n"
+     ]
+    }
+   ],
+   "source": [
+    "mig_11 = mi.groupby(level=0)\n",
+    "print_groups(mig_11)"
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 101,
+   "metadata": {},
+   "outputs": [
+    {
+     "name": "stdout",
+     "output_type": "stream",
+     "text": [
+      "('AAPL', 2012, 1)\n                        Date  Adj Close\nSymbol Year Month                      \nAAPL   2012 1     2012-01-03     55.414\n            1     2012-01-04     55.711\n            1     2012-01-05     56.330\n            1     2012-01-06     56.919\n            1     2012-01-09     56.829\n('AAPL', 2012, 2)\n                        Date  Adj Close\nSymbol Year Month                      \nAAPL   2012 2     2012-02-01     61.472\n            2     2012-02-02     61.328\n            2     2012-02-03     61.942\n            2     2012-02-06     62.520\n            2     2012-02-07     63.175\n('AAPL', 2012, 3)\n                        Date  Adj Close\nSymbol Year Month                      \nAAPL   2012 3     2012-03-01     73.368\n            3     2012-03-02     73.464\n            3     2012-03-05     71.844\n            3     2012-03-06     71.453\n            3     2012-03-07     71.511\n('AAPL', 2012, 4)\n                        Date  Adj Close\nSymbol Year Month                      \nAAPL   2012 4     2012-04-02     83.361\n            4     2012-04-03     84.801\n            4     2012-04-04     84.126\n            4     2012-04-05     85.389\n            4     2012-04-09     85.733\n('AAPL', 2012, 5)\n                        Date  Adj Close\nSymbol Year Month                      \nAAPL   2012 5     2012-05-01     78.443\n            5     2012-05-02     78.961\n            5     2012-05-03     78.401\n            5     2012-05-04     76.168\n            5     2012-05-07     76.738\n('AAPL', 2012, 6)\n                        Date  Adj Close\nSymbol Year Month                      \nAAPL   2012 6     2012-06-01     75.594\n            6     2012-06-04     76.039\n            6     2012-06-05     75.842\n            6     2012-06-06     77.005\n            6     2012-06-07     77.040\n('AAPL', 2012, 7)\n                        Date  Adj Close\nSymbol Year Month                      \nAAPL   2012 7     2012-07-02     79.843\n            7     2012-07-03     80.771\n            7     2012-07-05     82.190\n            7     2012-07-06     81.643\n            7     2012-07-09     82.722\n('AAPL', 2012, 8)\n                        Date  Adj Close\nSymbol Year Month                      \nAAPL   2012 8     2012-08-01     81.768\n            8     2012-08-02     81.900\n            8     2012-08-03     82.966\n            8     2012-08-06     83.889\n            8     2012-08-07     83.668\n('AAPL', 2012, 9)\n                        Date  Adj Close\nSymbol Year Month                      \nAAPL   2012 9     2012-09-04     91.343\n            9     2012-09-05     90.702\n            9     2012-09-06     91.519\n            9     2012-09-07     92.084\n            9     2012-09-10     89.688\n('AAPL', 2012, 10)\n                        Date  Adj Close\nSymbol Year Month                      \nAAPL   2012 10    2012-10-01     89.235\n            10    2012-10-02     89.495\n            10    2012-10-03     90.867\n            10    2012-10-04     90.238\n            10    2012-10-05     88.315\n('AAPL', 2012, 11)\n                        Date  Adj Close\nSymbol Year Month                      \nAAPL   2012 11    2012-11-01     80.729\n            11    2012-11-02     78.058\n            11    2012-11-05     79.116\n            11    2012-11-06     78.877\n            11    2012-11-07     75.859\n('AAPL', 2012, 12)\n                        Date  Adj Close\nSymbol Year Month                      \nAAPL   2012 12    2012-12-03     79.691\n            12    2012-12-04     78.285\n            12    2012-12-05     73.247\n            12    2012-12-06     74.396\n            12    2012-12-07     72.494\n('MSFT', 2012, 1)\n                        Date  Adj Close\nSymbol Year Month                      \nMSFT   2012 1     2012-01-03     24.422\n            1     2012-01-04     24.997\n            1     2012-01-05     25.252\n            1     2012-01-06     25.644\n            1     2012-01-09     25.307\n('MSFT', 2012, 2)\n                        Date  Adj Close\nSymbol Year Month                      \nMSFT   2012 2     2012-02-01     27.268\n            2     2012-02-02     27.323\n            2     2012-02-03     27.587\n            2     2012-02-06     27.551\n            2     2012-02-07     27.688\n('MSFT', 2012, 3)\n                        Date  Adj Close\nSymbol Year Month                      \nMSFT   2012 3     2012-03-01     29.652\n            3     2012-03-02     29.459\n            3     2012-03-05     29.202\n            3     2012-03-06     28.981\n            3     2012-03-07     29.238\n('MSFT', 2012, 4)\n                        Date  Adj Close\nSymbol Year Month                      \nMSFT   2012 4     2012-04-02     29.652\n            4     2012-04-03     29.330\n            4     2012-04-04     28.660\n            4     2012-04-05     28.944\n            4     2012-04-09     28.559\n('MSFT', 2012, 5)\n                        Date  Adj Close\nSymbol Year Month                      \nMSFT   2012 5     2012-05-01     29.394\n            5     2012-05-02     29.202\n            5     2012-05-03     29.165\n            5     2012-05-04     28.449\n            5     2012-05-07     28.146\n('MSFT', 2012, 6)\n                        Date  Adj Close\nSymbol Year Month                      \nMSFT   2012 6     2012-06-01     26.297\n            6     2012-06-04     26.389\n            6     2012-06-05     26.352\n            6     2012-06-06     27.129\n            6     2012-06-07     27.018\n('MSFT', 2012, 7)\n                        Date  Adj Close\nSymbol Year Month                      \nMSFT   2012 7     2012-07-02     28.247\n            7     2012-07-03     28.432\n            7     2012-07-05     28.376\n            7     2012-07-06     27.905\n            7     2012-07-09     27.729\n('MSFT', 2012, 8)\n                        Date  Adj Close\nSymbol Year Month                      \nMSFT   2012 8     2012-08-01     27.184\n            8     2012-08-02     26.981\n            8     2012-08-03     27.498\n            8     2012-08-06     27.683\n            8     2012-08-07     27.970\n('MSFT', 2012, 9)\n                        Date  Adj Close\nSymbol Year Month                      \nMSFT   2012 9     2012-09-04     28.276\n            9     2012-09-05     28.276\n            9     2012-09-06     29.169\n            9     2012-09-07     28.797\n            9     2012-09-10     28.583\n('MSFT', 2012, 10)\n                        Date  Adj Close\nSymbol Year Month                      \nMSFT   2012 10    2012-10-01     27.439\n            10    2012-10-02     27.597\n            10    2012-10-03     27.783\n            10    2012-10-04     27.941\n            10    2012-10-05     27.774\n('MSFT', 2012, 11)\n                        Date  Adj Close\nSymbol Year Month                      \nMSFT   2012 11    2012-11-01     27.467\n            11    2012-11-02     27.448\n            11    2012-11-05     27.569\n            11    2012-11-06     27.783\n            11    2012-11-07     27.057\n('MSFT', 2012, 12)\n                        Date  Adj Close\nSymbol Year Month                      \nMSFT   2012 12    2012-12-03     24.794\n            12    2012-12-04     24.737\n            12    2012-12-05     25.019\n            12    2012-12-06     25.075\n            12    2012-12-07     24.822\n"
+     ]
+    }
+   ],
+   "source": [
+    "mig_112 = mi.groupby(level=['Symbol', 'Year', 'Month'])\n",
+    "print_groups(mig_112)"
+   ]
+  },
+  {
+   "cell_type": "heading",
+   "metadata": {},
+   "level": 1,
+   "source": [
+    ""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 102,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    ""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    ""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 102,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    ""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    ""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 102,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    ""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    ""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 102,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    ""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    ""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    ""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 102,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    ""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    ""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    ""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 102,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    ""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    ""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": 102,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    ""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    ""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    ""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    ""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    ""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    ""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    ""
+   ]
+  },
+  {
+   "cell_type": "code",
+   "execution_count": null,
+   "metadata": {},
+   "outputs": [],
+   "source": [
+    ""
+   ]
+  }
+ ],
+ "metadata": {},
+ "nbformat": 4,
+ "nbformat_minor": 0
+}
